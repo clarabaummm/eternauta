@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Qué dedo te controla? - El Eternauta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #22c55e;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-panel {
+            border: 1px solid #22c55e;
+            background-color: rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .intro-panel {
+            padding: 2rem;
+        }
+
+        .system-status {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-bottom: 1rem;
+        }
+
+        .intro-text {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .btn {
+            background-color: #22c55e;
+            color: #000;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background-color: #16a34a;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: #22c55e;
+            border: 1px solid #22c55e;
+            padding: 1rem;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #22c55e;
+            color: #000;
+        }
+
+        .btn-share {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-forum {
+            background-color: #374151;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .question-panel {
+            padding: 1.5rem;
+            color: #22c55e;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #166534;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #22c55e;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .result-panel {
+            color: white;
+        }
+
+        .result-header {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .result-content {
+            padding: 2rem;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .hand-emoji {
+            font-size: 4rem;
+            margin: 1rem 0;
+        }
+
+        .result-description {
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .forum-panel {
+            padding: 2rem;
+            color: white;
+        }
+
+        .forum-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .forum-subtitle {
+            color: #9ca3af;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .comment-textarea {
+            flex: 1;
+            background-color: #111827;
+            border: 1px solid #374151;
+            color: white;
+            padding: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .comment-card {
+            background-color: #111827;
+            border: 1px solid #374151;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .finger-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+
+        .comment-author {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .comment-text {
+            font-size: 0.85rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Finger colors */
+        .pulgar { background: linear-gradient(to right, #7f1d1d, #b91c1c); }
+        .indice { background: linear-gradient(to right, #78350f, #b45309); }
+        .mayor { background: linear-gradient(to right, #9a3412, #ea580c); }
+        .anular { background: linear-gradient(to right, #581c87, #7c3aed); }
+        .menique { background: linear-gradient(to right, #1e3a8a, #2563eb); }
+
+        .pulgar-dot { background: #b91c1c; }
+        .indice-dot { background: #b45309; }
+        .mayor-dot { background: #ea580c; }
+        .anular-dot { background: #7c3aed; }
+        .menique-dot { background: #2563eb; }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .intro-panel, .question-panel, .result-content, .forum-panel {
+                padding: 1rem;
+            }
+            
+            .result-title {
+                font-size: 1.5rem;
+            }
+            
+            .hand-emoji {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Intro Stage -->
+        <div id="intro-stage" class="game-panel">
+            <div class="intro-panel">
+                <div class="system-status">SISTEMA DE CONTROL ACTIVO...</div>
+                <div class="intro-text">
+                    <span id="intro-text"></span><span class="cursor">|</span>
+                </div>
+                <div style="text-align: center;">
+                    <button id="start-btn" class="btn hidden">INICIAR ESCANEO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Stage -->
+        <div id="questions-stage" class="game-panel hidden">
+            <div class="question-panel">
+                <div class="system-status">
+                    PREGUNTA <span id="current-q">1</span> DE <span id="total-q">8</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill" style="width: 12.5%"></div>
+                </div>
+                <div class="question-text" id="question-text"></div>
+                <div id="options-container"></div>
+            </div>
+        </div>
+
+        <!-- Results Stage -->
+        <div id="results-stage" class="game-panel hidden">
+            <div id="result-header" class="result-header">
+                <div class="system-status">RESULTADO DEL ESCANEO</div>
+                <h1 id="result-name" class="result-title"></h1>
+                <h2 id="result-title-text" class="result-subtitle"></h2>
+            </div>
+            <div class="result-content">
+                <div style="text-align: center;">
+                    <div class="hand-emoji">✋</div>
+                    <p id="result-description" class="result-description"></p>
+                </div>
+                <button id="share-btn" class="btn-share">
+                    📤 Compartí tu resultado
+                </button>
+                <button id="forum-btn" class="btn-forum">
+                    💬 ¿Te sentís identificado con este resultado?
+                </button>
+            </div>
+        </div>
+
+        <!-- Forum Stage -->
+        <div id="forum-stage" class="game-panel hidden">
+            <div class="forum-panel">
+                <h1 class="forum-title">El Foro de los Controlados</h1>
+                <p class="forum-subtitle">
+                    Comentá de forma anónima. Leé lo que otros dijeron. Contestá libremente:<br>
+                    ¿Sentís que este dedo te representa? ¿Por qué?
+                </p>
+                
+                <div class="comment-form">
+                    <textarea id="new-comment" class="comment-textarea" placeholder="Escribí tu reflexión anónima..." rows="3"></textarea>
+                    <button id="add-comment-btn" class="btn" style="padding: 0.75rem 1.5rem;">Enviar</button>
+                </div>
+                
+                <div id="comments-container"></div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button id="restart-btn" class="btn-forum">
+                        👁️ Volver al inicio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game data
+        const questions = [
+            {
+                id: 1,
+                text: 'Si recibís una orden que no entendés pero viene "de arriba", vos...',
+                options: [
+                    { text: "La cumplís sin preguntar.", finger: "pulgar" },
+                    { text: "Dudás, pero la cumplís.", finger: "menique" },
+                    { text: "La cuestionás en voz alta.", finger: "indice" },
+                    { text: "La ignorás.", finger: "mayor" }
+                ]
+            },
+            {
+                id: 2,
+                text: "Estás en una sala llena de gente, sabés que uno es el enemigo, pero no sabés quién. Vos...",
+                options: [
+                    { text: "Esperás instrucciones.", finger: "pulgar" },
+                    { text: "Observás a todos en silencio.", finger: "menique" },
+                    { text: "Señalás al más sospechoso.", finger: "indice" },
+                    { text: "Actuás rápido sin pedir permiso.", finger: "mayor" }
+                ]
+            },
+            {
+                id: 3,
+                text: "¿Qué te molesta más?",
+                options: [
+                    { text: "Que te vigilen.", finger: "menique" },
+                    { text: "Que te manden sin preguntar.", finger: "pulgar" },
+                    { text: "Que te manipulen emocionalmente.", finger: "anular" },
+                    { text: "No saber quién toma las decisiones.", finger: "indice" }
+                ]
+            },
+            {
+                id: 4,
+                text: "En un grupo, vos solés ser quien...",
+                options: [
+                    { text: "Ordena.", finger: "pulgar" },
+                    { text: "Cuida.", finger: "anular" },
+                    { text: "Observa.", finger: "menique" },
+                    { text: "Explota.", finger: "mayor" }
+                ]
+            },
+            {
+                id: 5,
+                text: "Cuando algo sale mal, tu primera reacción es...",
+                options: [
+                    { text: "Buscar al responsable.", finger: "indice" },
+                    { text: "Asumir el control.", finger: "pulgar" },
+                    { text: "Proteger a los tuyos.", finger: "anular" },
+                    { text: "Desaparecer del lugar.", finger: "menique" }
+                ]
+            },
+            {
+                id: 6,
+                text: "¿Qué te da más poder?",
+                options: [
+                    { text: "La información.", finger: "menique" },
+                    { text: "La autoridad.", finger: "pulgar" },
+                    { text: "La influencia emocional.", finger: "anular" },
+                    { text: "La fuerza bruta.", finger: "mayor" }
+                ]
+            },
+            {
+                id: 7,
+                text: "Si tuvieras que elegir, preferirías...",
+                options: [
+                    { text: "Ser temido.", finger: "mayor" },
+                    { text: "Ser respetado.", finger: "pulgar" },
+                    { text: "Ser amado.", finger: "anular" },
+                    { text: "Ser invisible.", finger: "menique" }
+                ]
+            },
+            {
+                id: 8,
+                text: "En una crisis, vos...",
+                options: [
+                    { text: "Tomás el mando.", finger: "pulgar" },
+                    { text: "Buscás la verdad.", finger: "indice" },
+                    { text: "Destruís el problema.", finger: "mayor" },
+                    { text: "Consolás a otros.", finger: "anular" }
+                ]
+            }
+        ];
+
+        const fingerResults = {
+            pulgar: {
+                name: "El Pulgar",
+                title: "El que aprueba o aplasta",
+                description: "Sos parte de la autoridad. Tu forma de controlar (o ser controlado) es directa, clara y jerárquica. Ejecutás órdenes con seguridad, pero... ¿quién las dicta?",
+                color: "pulgar"
+            },
+            indice: {
+                name: "El Índice",
+                title: "El que señala y acusa",
+                description: "Sos el dedo que marca, que identifica, que separa. Tu poder está en mostrar la verdad... o lo que creés que es la verdad. Pero cuidado: quien señala también puede ser señalado.",
+                color: "indice"
+            },
+            mayor: {
+                name: "El Mayor",
+                title: "El que destruye y construye",
+                description: "Sos la fuerza bruta del sistema. Cuando hay que actuar sin pensar, ahí estás. Tu poder es directo, sin sutilezas. Pero... ¿esa fuerza es tuya o te la prestaron?",
+                color: "mayor"
+            },
+            anular: {
+                name: "El Anular",
+                title: "El que une y manipula",
+                description: "Sos el dedo de los vínculos, de las emociones, de la lealtad. Tu control es sutil, emocional. Sabés cómo hacer que otros hagan lo que querés... pero ¿quién te controla a vos?",
+                color: "anular"
+            },
+            menique: {
+                name: "El Meñique",
+                title: "El que observa y susurra",
+                description: "Sos el más pequeño pero el más astuto. Tu poder está en la información, en lo que ves y otros no. Controlás desde las sombras... pero ¿realmente controlás o solo creés que lo hacés?",
+                color: "menique"
+            }
+        };
+
+        const forumComments = [
+            {
+                id: 1,
+                finger: "pulgar",
+                comment: "Me salió Pulgar y es verdad... siempre termino siendo el que toma las decisiones, pero a veces me pregunto si realmente quiero esa responsabilidad.",
+                anonymous: "Usuario_001"
+            },
+            {
+                id: 2,
+                finger: "menique",
+                comment: "Meñique acá. Es increíble cómo siempre sé cosas que otros no saben, pero me da miedo que alguien más sepa lo que yo sé.",
+                anonymous: "Observador_X"
+            },
+            {
+                id: 3,
+                finger: "indice",
+                comment: "Índice. Toda mi vida señalando problemas, pero nunca me pregunté quién me enseñó a ver esos problemas.",
+                anonymous: "Señalador_99"
+            },
+            {
+                id: 4,
+                finger: "anular",
+                comment: "Anular... siempre cuidando a todos, pero ¿quién me cuida a mí? A veces siento que mi amor es mi prisión.",
+                anonymous: "Cuidador_Silent"
+            },
+            {
+                id: 5,
+                finger: "mayor",
+                comment: "Mayor. Rompo todo lo que toco, pero después me doy cuenta de que no era mi decisión romperlo.",
+                anonymous: "Destructor_Z"
+            }
+        ];
+
+        // Game state
+        let currentStage = 'intro';
+        let currentQuestion = 0;
+        let scores = {
+            pulgar: 0,
+            indice: 0,
+            mayor: 0,
+            anular: 0,
+            menique: 0
+        };
+        let result = '';
+        let userComments = [];
+
+        // DOM elements
+        const stages = {
+            intro: document.getElementById('intro-stage'),
+            questions: document.getElementById('questions-stage'),
+            results: document.getElementById('results-stage'),
+            forum: document.getElementById('forum-stage')
+        };
+
+        // Initialize game
+        function init() {
+            showStage('intro');
+            typeIntroText();
+        }
+
+        function showStage(stage) {
+            Object.values(stages).forEach(el => el.classList.add('hidden'));
+            stages[stage].classList.remove('hidden');
+            currentStage = stage;
+        }
+
+        function typeIntroText() {
+            const fullText = `Estás dentro del sistema de control de los Ellos.
+
+Ellos observan. Ellos deciden.
+
+Descubrí qué dedo de la mano del poder te está controlando.`;
+            
+            const textElement = document.getElementById('intro-text');
+            const startBtn = document.getElementById('start-btn');
+            let i = 0;
+
+            function typeChar() {
+                if (i < fullText.length) {
+                    textElement.textContent = fullText.slice(0, i + 1);
+                    i++;
+                    setTimeout(typeChar, 50);
+                } else {
+                    startBtn.classList.remove('hidden');
+                }
+            }
+
+            typeChar();
+        }
+
+        function startQuestions() {
+            showStage('questions');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            const questionText = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const currentQ = document.getElementById('current-q');
+            const totalQ = document.getElementById('total-q');
+            const progressFill = document.getElementById('progress-fill');
+
+            currentQ.textContent = currentQuestion + 1;
+            totalQ.textContent = questions.length;
+            questionText.textContent = question.text;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressFill.style.width = progress + '%';
+
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'btn-secondary';
+                button.innerHTML = `<span style="margin-right: 1rem;">${String.fromCharCode(65 + index)})</span>${option.text}`;
+                button.onclick = () => handleAnswer(option.finger);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function handleAnswer(finger) {
+            scores[finger]++;
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                calculateResult();
+                showResults();
+            }
+        }
+
+        function calculateResult() {
+            let maxScore = 0;
+            let resultFinger = '';
+
+            for (const [finger, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultFinger = finger;
+                }
+            }
+
+            result = resultFinger;
+        }
+
+        function showResults() {
+            showStage('results');
+            const fingerResult = fingerResults[result];
+            
+            document.getElementById('result-header').className = `result-header ${fingerResult.color}`;
+            document.getElementById('result-name').textContent = fingerResult.name;
+            document.getElementById('result-title-text').textContent = fingerResult.title;
+            document.getElementById('result-description').textContent = fingerResult.description;
+        }
+
+        function shareResult() {
+            const fingerResult = fingerResults[result];
+            const text = `${fingerResult.name} me controla. ¿Y a vos? Entrá al sistema y descubrilo: ${window.location.href} #ElEternauta #ElDedoQueTeControla`;
+            
+            if (navigator.share) {
+                navigator.share({ text: text });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Texto copiado al portapapeles');
+                }).catch(() => {
+                    prompt('Copiá este texto:', text);
+                });
+            }
+        }
+
+        function showForum() {
+            showStage('forum');
+            renderComments();
+        }
+
+        function renderComments() {
+            const container = document.getElementById('comments-container');
+            const allComments = [...userComments, ...forumComments];
+            
+            container.innerHTML = '';
+            allComments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment-card';
+                
+                const fingerResult = fingerResults[comment.finger];
+                commentDiv.innerHTML = `
+                    <div class="comment-header">
+                        <div class="finger-dot ${fingerResult.color}-dot"></div>
+                        <span class="comment-author">${comment.anonymous}</span>
+                        <span class="comment-author">•</span>
+                        <span class="comment-author">${fingerResult.name}</span>
+                    </div>
+                    <p class="comment-text">${comment.comment}</p>
+                `;
+                
+                container.appendChild(commentDiv);
+            });
+        }
+
+        function addComment() {
+            const textarea = document.getElementById('new-comment');
+            const comment = textarea.value.trim();
+            
+            if (comment) {
+                const newComment = {
+                    id: Date.now(),
+                    finger: result,
+                    comment: comment,
+                    anonymous: `Usuario_${Math.floor(Math.random() * 1000)}`
+                };
+                
+                userComments.unshift(newComment);
+                textarea.value = '';
+                renderComments();
+            }
+        }
+
+        function restart() {
+            currentQuestion = 0;
+            scores = {
+                pulgar: 0,
+                indice: 0,
+                mayor: 0,
+                anular: 0,
+                menique: 0
+            };
+            result = '';
+            document.getElementById('intro-text').textContent = '';
+            document.getElementById('start-btn').classList.add('hidden');
+            showStage('intro');
+            typeIntroText();
+        }
+
+        // Event listeners
+        document.getElementById('start-btn').onclick = startQuestions;
+        document.getElementById('share-btn').onclick = shareResult;
+        document.getElementById('forum-btn').onclick = showForum;
+        document.getElementById('add-comment-btn').onclick = addComment;
+        document.getElementById('restart-btn').onclick = restart;
+
+        // Enter key for comment
+        document.getElementById('new-comment').onkeypress = function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                addComment();
+            }
+        };
+
+        // Initialize game
+        init();
+    </script>
+</body>
+</html>
